@@ -445,9 +445,32 @@ that code.
 
 ---------------------------------------
 
+# Review
+
+[.build-lists: true]
+
+* In what situations is `console.log()` a helpful tool?
+  * When is it not?
+
+<br />
+
+* In what situations is `debugger` a helpful tool?
+  * When is it not?
+
+---
+
+# Review
+
+[.build-lists: true]
+
+<br />
+
+* How can the `Elements` tab be used for debugging?
+* How can the `Console` tab be used for debugging?
+* How can the `Sources` tab be used for debugging?
+* How can the `Network` tab be used for debugging?
+  
+---
+
 For more details and information about other ways to dig into your js, checkout the [Chrome Documentation](https://developer.chrome.com/devtools/docs/javascript-debugging).
-
-
-
-
 
