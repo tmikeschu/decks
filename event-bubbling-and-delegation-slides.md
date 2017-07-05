@@ -1,24 +1,30 @@
-# [fit] Event 
+# [fit] Event
 # [fit] Bubbling and Delegation
 
-ADD GIPHY
+![right](https://media.giphy.com/media/k9b6CX6oZelhK/giphy.gif)
 
 ---
 
 # Learning Goals
 
-* Understand event bubbling
+* Understand event bubbling and delegation
 * Learn to use event bubbling to set event listeners
 
 ---
 
 # Event Basics
 
-Events are happening all the time in the browser. When the browser has finished loading the page, an event is fired. Every time the user moves their mouse, hovers over an element, clicks or taps, submits a form, presses down on a key or takes their finger off that key — an event is fired. Some of these events are very easy to spot when they occur (e.g. the user clicks on a hyperlink), but many go by completely unnoticed.
+Events are happening all the time in the browser. When the browser has finished loading the page, an event is fired.
+
+Every time the user moves their mouse, hovers over an element, clicks or taps, submits a form, presses down on a key or takes their finger off that key — an event is fired.
+
+Some of these events are very easy to spot when they occur (e.g. the user clicks on a hyperlink), but many go by completely unnoticed.
 
 ---
 
-It is, however, possible for us to use JavaScript to set up listeners for events that interest us. Our listeners wait patiently on a DOM node until the event they're waiting for is fired. Then, they spring into action, running an appropriate function to respond to the event as required, or whatever else you deem appropriate.
+It is, however, possible for us to use JavaScript to set up listeners for events that interest us. Our listeners wait patiently on a DOM node until the event they're waiting for is fired.
+
+Then, they spring into action, running an appropriate function to respond to the event as required, or whatever else you deem appropriate.
 
 For a review of how to set event listeners, please refer to the [Introduction to JavaScript III - Intro to DOM Manipulation](http://frontend.turing.io/lessons/module-1/js-3-dom-manipulation.html)
 
@@ -54,14 +60,15 @@ You may have noticed that the event listeners on a parent element are fired when
 
 ---
 
+[.build-lists: true]
+
 When an event occurs:
 
 * The browser checks the element to see if there are any event listeners registered.
 * After it checks the element where the event occurred, the browser works its way up the DOM tree to see if any of the parents have a listener registered
   * then grandparents, and so on.
 * It checks every element all the way up to the root (see `event.path`).
-
-**This process is known as:**
+* This process is known as:
 
 ---
 
@@ -102,7 +109,7 @@ The anonymous function passed to `document.addEventListener()` takes an optional
 
 Each type of event supports a number of different properties.
 
-`MouseEvent`s contain information about the `x` and `y` coordinates where the mouse was clicked.
+`MouseEvent` has information about the `x` and `y` coordinates where the mouse was clicked.
 
 `KeyboardEvent` has information about which key was pressed.
 
@@ -112,7 +119,30 @@ The `target` and `currentTarget` properties on the `Event` object can be useful 
 
 The `target` property represents the node that actually triggered the event, whereas `currentTarget` is the node that is *listening* for the event. Sometimes, `target` and `currentTarget` are the same node, but not *always*.
 
+---
+
 For example, if a `div` listens for a `click` event, a child `button` of the `div` is clicked, the `target` would be the `button`, and the `currentTarget` would be the `div`.
+
+```html
+<!-- index.html -->
+<div class="container">
+  <button class="submit">Submit</button>
+</div>
+```
+
+```js
+// scripts.js
+document.querySelector(".container")
+  .addEventListener("click", function (event) {
+    console.log(event.currentTarget) // With only one event listener registered,
+      // this will always be the div.container node
+
+    console.log(event.target) // if you click the button, this will be the
+      // button.submit node
+      // if you click outside of the button, but still in the .container space,
+      // it will log the div.container node
+  })
+```
 
 ---
 
@@ -138,10 +168,8 @@ document.querySelector('#click-me').addEventListener('click', function (event) {
 
 ---
 
-# [fit] STOP 
-
----
-
+# [fit] STOP
+# [fit] &&
 # [fit] REFACTOR
 
 ---
@@ -184,6 +212,23 @@ function logger (targets) {
 
 ---
 
+[.build-lists: true]
+
+Yes, more lines of code. **BUT**
+
+* **_Wayyy_** easier to test.
+* **_Wayyy_** more flexible over time.
+* **_Wayyy_** more reusable.
+* More about telling your code *what* to do rather than *how* to do it (i.e., declarative vs imperative programming).
+
+---
+
+# [fit] Back
+# [fit] to
+# [fit] Events
+
+---
+
 # Pair Practice
 
 Modify the previous code to log the `event` itself (as opposed to the `target` property on the event). What other properties on the event object look particularly useful?
@@ -212,7 +257,7 @@ You should see three buttons labeled "Click me!" as well as a button for adding 
 
 # [fit] What did you notice?
 
-// question gif
+![inline fit](https://media.giphy.com/media/3o7buirYcmV5nSwIRW/giphy.gif)
 
 ---
 
@@ -224,6 +269,8 @@ The event listeners are only bound to the buttons that were present when the pag
 
 # [fit] Event
 # [fit] Delegation
+
+![right](https://media.giphy.com/media/FUNDvNuzqdKTu/giphy.gif)
 
 ---
 
@@ -241,9 +288,62 @@ Event delegation in tandem with `target` and `currentTarget` allows you to have 
 
 ---
 
+# [fit] Enough with the Bubbles
+
+You have already come across `event.preventDefault()`, which does exactly what its name implies.
+
+In the context of event bubbling and delegation, there is another function on the `Event` object that is useful for controlling event flow:
+
+```js
+event.stopPropagation()
+```
+
+---
+
+This prevents the event from traveling up the ancestral node path.
+
+This is helpful if a parent and child both have listeners, but should be executed in different contexts.
+
+---
+
+# [fit] I never thought
+
+# [fit] I would ever
+
+# [fit] say the words
+<br />
+# [fit] "ancestral node path".
+
+---
+
+Coming back to this generic logging example, what happens if you stop propagation after the `console.log()` line?
+
+```js, [.highlight: 14]
+const selectors = [".grandparent", ".parent", "#click-me"]
+
+selectors.forEach(listenForClick)
+
+function listenForClick (selector) {
+  const targets = ["target", "currentTarget"]
+  document.querySelector(selector)
+    .addEventListener("click", logger(targets))
+}
+
+function logger (targets) {
+  return function (event) {
+    targets.forEach(target => console.log(target, event[target]))
+    event.stopPropagation()
+  }
+}
+```
+
+Click around the DOM to see the results.
+
+---
+
 # Pair Practice
 
-Fork the previous CodePen and write a click event handler that responds to buttons that both *already* and *might/will* exist on the DOM.
+Fork the previous CodePen and write a click event handler that responds to (and only to) buttons that both *do* and *could* exist on the DOM.
 
 ---
 
